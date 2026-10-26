@@ -1,0 +1,130 @@
+/* Conteneur de la navbar */
+.navbar-container {
+  padding: 1rem 2rem;
+  background-color: var(--color-off-white);
+  transition: background-color 0.4s ease;
+}
+
+/* Titre Portfolio */
+.navbar-title {
+  color: var(--color-graphite);
+  margin: 0;
+  transition: color 0.4s ease;
+}
+
+/* Liens de navigation */
+.navbar-links a {
+  color: var(--color-graphite);
+  text-decoration: none;
+  transition: color 0.4s ease;
+}
+
+/* ===== Toggle de langue FR / EN ===== */
+.lang-switch {
+  position: relative;
+  display: block;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  width: 80px;
+  height: 36px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 999px;
+  background-color: var(--color-graphite);
+  cursor: pointer;
+  overflow: hidden;
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.lang-switch:hover {
+  background-color: var(--color-graphite-light);
+}
+
+.lang-switch:focus-visible {
+  outline: 2px solid var(--color-sky-mint);
+  outline-offset: 3px;
+}
+
+/* Pastille mint qui glisse */
+.lang-switch__knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 34px;
+  height: 30px;
+  border-radius: 999px;
+  background-color: var(--color-sky-mint);
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.lang-switch[data-lang='EN'] .lang-switch__knob {
+  transform: translateX(40px);
+}
+
+/* Labels : chacun occupe une moitié du switch */
+.lang-switch__label {
+  position: absolute;
+  top: 0;
+  width: 40px;
+  height: 36px;
+  line-height: 36px;
+  text-align: center;
+  color: var(--color-off-white);
+  transition: color 0.3s ease;
+  user-select: none;
+}
+
+.lang-switch__label--fr {
+  left: 0;
+}
+
+.lang-switch__label--en {
+  left: 40px;
+}
+
+/* Label actif : foncé pour rester lisible sur la pastille mint */
+.lang-switch[data-lang='FR'] .lang-switch__label--fr,
+.lang-switch[data-lang='EN'] .lang-switch__label--en {
+  color: var(--color-graphite);
+}
+
+/* ===== État scrollé ===== */
+body[data-scrolled='true'] .navbar-container {
+  background-color: var(--color-graphite);
+}
+
+body[data-scrolled='true'] .navbar-title {
+  color: var(--color-sky-mint);
+}
+
+body[data-scrolled='true'] .navbar-links a {
+  color: var(--color-off-white);
+}
+
+/* Toggle : rail clair, pastille foncée pour rester visible sur le graphite */
+body[data-scrolled='true'] .lang-switch {
+  background-color: var(--color-off-white);
+}
+
+body[data-scrolled='true'] .lang-switch:hover {
+  background-color: var(--color-off-white);
+}
+
+body[data-scrolled='true'] .lang-switch__knob {
+  background-color: var(--color-graphite);
+}
+
+body[data-scrolled='true'] .lang-switch__label {
+  color: var(--color-graphite);
+}
+
+body[data-scrolled='true'] .lang-switch[data-lang='FR'] .lang-switch__label--fr,
+body[data-scrolled='true'] .lang-switch[data-lang='EN'] .lang-switch__label--en {
+  color: var(--color-off-white);
+}

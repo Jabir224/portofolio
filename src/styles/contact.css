@@ -1,0 +1,426 @@
+/* ===== Bloc principal ===== */
+.contact-card {
+  --mx: 50%;
+  --my: 50%;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--color-graphite-light);
+  border-radius: 1.5rem;
+  background-color: var(--color-graphite);
+  background-image: radial-gradient(
+    rgba(237, 242, 244, 0.08) 1px,
+    transparent 1px
+  );
+  background-size: 20px 20px;
+  color: var(--color-off-white);
+}
+
+/* Halo mint qui suit la souris */
+.contact-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle 18rem at var(--mx) var(--my),
+    rgba(184, 247, 228, 0.1),
+    transparent
+  );
+  pointer-events: none;
+}
+
+.contact-card > * {
+  position: relative;
+}
+
+.contact-label,
+.contact-link-label,
+.contact-form-label,
+.contact-form-sub,
+.contact-place,
+.contact-footer,
+.contact-chip,
+.contact-field-label,
+.contact-feedback {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* ===== Apparition en cascade ===== */
+.contact-reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.7s ease var(--d),
+    transform 0.7s ease var(--d);
+}
+
+.contact[data-visible='true'] .contact-reveal {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== Colonne gauche ===== */
+.contact-label {
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  color: var(--color-sky-mint);
+}
+
+.contact-title {
+  margin-bottom: 1rem;
+  font-size: clamp(2.1rem, 5.5vw, 3.6rem);
+  line-height: 1.05;
+}
+
+.contact-title-accent {
+  color: var(--color-sky-mint);
+}
+
+.contact-text {
+  max-width: 34ch;
+  margin-bottom: 1.25rem;
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+.contact-place {
+  margin-bottom: 2rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+}
+
+.contact-pulse {
+  position: relative;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background-color: var(--color-sky-mint);
+}
+
+.contact-pulse::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background-color: var(--color-sky-mint);
+  animation: contact-ping 2s ease-out infinite;
+}
+
+@keyframes contact-ping {
+  from {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(3);
+  }
+}
+
+/* ===== Lignes de liens ===== */
+.contact-link {
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--color-graphite-light);
+  border-radius: 1rem;
+  color: var(--color-off-white);
+  text-decoration: none;
+  transition:
+    border-color 0.3s ease,
+    background-color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.contact-link:hover,
+.contact-link:focus-visible {
+  border-color: var(--color-sky-mint);
+  background-color: rgba(184, 247, 228, 0.06);
+  color: var(--color-off-white);
+  transform: translateX(6px);
+}
+
+.contact-link-icon {
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.75rem;
+  background-color: var(--color-graphite-light);
+  font-size: 1.15rem;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+.contact-link:hover .contact-link-icon,
+.contact-link:focus-visible .contact-link-icon {
+  background-color: var(--color-sky-mint);
+  color: var(--color-graphite);
+}
+
+.contact-link-body {
+  min-width: 0;
+}
+
+.contact-link-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--color-sky-mint);
+}
+
+.contact-link-value {
+  overflow: hidden;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.contact-link-arrow {
+  color: var(--color-sky-mint);
+  transition: transform 0.3s ease;
+}
+
+.contact-link:hover .contact-link-arrow,
+.contact-link:focus-visible .contact-link-arrow {
+  transform: translate(3px, -3px);
+}
+
+/* ===== Formulaire ===== */
+.contact-form {
+  padding: 1.5rem;
+  border: 1px solid var(--color-graphite-light);
+  border-radius: 1.25rem;
+  background-color: rgba(237, 242, 244, 0.03);
+}
+
+.contact-form-label {
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  color: var(--color-sky-mint);
+}
+
+.contact-form-sub {
+  margin: 0 0 0.75rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  opacity: 0.7;
+}
+
+/* Champ piège anti-spam, hors écran */
+.contact-honey {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+/* Puces de sujet */
+.contact-chip {
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--color-graphite-light);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-off-white);
+  font-size: 0.78rem;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease;
+}
+
+.contact-chip:hover {
+  border-color: var(--color-sky-mint);
+}
+
+.contact-chip[data-active='true'] {
+  border-color: var(--color-sky-mint);
+  background-color: var(--color-sky-mint);
+  color: var(--color-graphite);
+  font-weight: 600;
+}
+
+/* Champs à label flottant */
+.contact-fields {
+  margin-top: 1.5rem;
+}
+
+.contact-input {
+  padding: 1.5rem 1rem 0.55rem;
+  border: 1px solid var(--color-graphite-light);
+  border-radius: 0.85rem;
+  background-color: transparent;
+  color: var(--color-off-white);
+  font-size: 0.95rem;
+  outline: none;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.contact-input:focus {
+  border-color: var(--color-sky-mint);
+  box-shadow: 0 0 0 3px rgba(184, 247, 228, 0.15);
+}
+
+.contact-textarea {
+  display: block;
+  min-height: 8rem;
+  resize: vertical;
+}
+
+.contact-field-label {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  color: var(--color-off-white);
+  opacity: 0.6;
+  pointer-events: none;
+  transform-origin: left top;
+  transition:
+    transform 0.25s ease,
+    color 0.25s ease,
+    opacity 0.25s ease;
+}
+
+.contact-input:focus ~ .contact-field-label,
+.contact-input:not(:placeholder-shown) ~ .contact-field-label {
+  color: var(--color-sky-mint);
+  opacity: 1;
+  transform: translateY(-0.6rem) scale(0.8);
+}
+
+/* Bouton d'envoi */
+.contact-submit {
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 0.95rem 1.75rem;
+  border: 0;
+  border-radius: 999px;
+  background-color: var(--color-sky-mint);
+  color: var(--color-graphite);
+  font-weight: 700;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    background-color 0.3s ease;
+}
+
+.contact-submit:hover:not(:disabled) {
+  box-shadow: 0 0 28px rgba(184, 247, 228, 0.35);
+  transform: translateY(-2px);
+}
+
+.contact-submit i {
+  transition: transform 0.3s ease;
+}
+
+.contact-submit:hover:not(:disabled) i {
+  transform: translateX(4px);
+}
+
+.contact-submit:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+.contact-submit[data-status='sent'] {
+  background-color: var(--color-off-white);
+}
+
+/* Message sous le bouton */
+.contact-feedback {
+  margin: 1rem 0 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  opacity: 0.6;
+  transition:
+    opacity 0.3s ease,
+    color 0.3s ease;
+}
+
+.contact-feedback[data-status='sent'] {
+  color: var(--color-sky-mint);
+  opacity: 1;
+}
+
+.contact-feedback[data-status='error'] {
+  color: #ff9b9b;
+  opacity: 1;
+}
+
+.contact-feedback-link {
+  color: inherit;
+  text-decoration: underline;
+}
+
+/* ===== Pied de page ===== */
+.contact-footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-graphite-light);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  opacity: 0.8;
+}
+
+.contact-top {
+  color: var(--color-sky-mint);
+  text-decoration: none;
+}
+
+.contact-top i {
+  transition: transform 0.3s ease;
+}
+
+.contact-top:hover i {
+  transform: translateY(-3px);
+}
+
+/* ===== Desktop : le formulaire respire un peu plus ===== */
+@media (min-width: 992px) {
+  .contact-form {
+    padding: 2rem;
+  }
+}
+
+/* ===== Mouvement réduit ===== */
+@media (prefers-reduced-motion: reduce) {
+  .contact-pulse::after {
+    animation: none;
+  }
+
+  .contact-reveal {
+    transition-duration: 0.01s;
+  }
+}
+
+/* ===== État scrollé ===== */
+body[data-scrolled='true'] .contact-card {
+  border-color: var(--color-graphite-light);
+  background-color: var(--color-graphite-light);
+}
+
+body[data-scrolled='true'] .contact-form {
+  border-color: var(--color-graphite);
+  background-color: var(--color-graphite);
+}
+
+body[data-scrolled='true'] .contact-link {
+  border-color: var(--color-graphite);
+}
+
+body[data-scrolled='true'] .contact-link-icon {
+  background-color: var(--color-graphite);
+}
+
+body[data-scrolled='true'] .contact-chip,
+body[data-scrolled='true'] .contact-input {
+  border-color: var(--color-graphite-light);
+}
+
+body[data-scrolled='true'] .contact-footer {
+  border-top-color: var(--color-graphite);
+}

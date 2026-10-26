@@ -1,0 +1,691 @@
+.journey {
+  --node: 36px;
+  position: relative;
+  background-color: transparent;
+}
+
+/* Grille de points en fond, estompée vers les bords */
+.journey::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--color-graphite) 18%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 24px 24px;
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+  mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+}
+
+.journey > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== En-tête ===== */
+.journey-eyebrow {
+  color: var(--color-graphite);
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  transition: color 0.4s ease;
+}
+
+.journey-title {
+  max-width: 24ch;
+  color: var(--color-graphite);
+  font-size: clamp(1.75rem, 3.8vw, 3.25rem);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  transition: color 0.4s ease;
+}
+
+.journey-title-accent {
+  color: var(--color-graphite);
+  transition: color 0.4s ease;
+}
+
+.journey-hint {
+  color: var(--color-graphite);
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+  opacity: 0.7;
+  transition: color 0.4s ease;
+}
+
+/* =====================================================
+   BASE = MOBILE : timeline verticale interactive
+   ===================================================== */
+.journey-list {
+  position: relative;
+  margin-left: 0.5rem;
+  padding-left: calc(var(--node) + 1rem);
+}
+
+/* Rail vertical (fond) */
+.journey-list::before {
+  content: '';
+  position: absolute;
+  top: calc(var(--node) / 2);
+  bottom: 0;
+  left: calc(var(--node) / 2 - 1px);
+  width: 2px;
+  background-color: color-mix(in srgb, var(--color-graphite) 25%, transparent);
+  transition: background-color 0.4s ease;
+}
+
+/* Ligne qui se remplit au fil du scroll */
+.journey-list::after {
+  content: '';
+  position: absolute;
+  top: calc(var(--node) / 2);
+  left: calc(var(--node) / 2 - 1px);
+  width: 2px;
+  height: calc((100% - var(--node) / 2) * var(--progress, 0));
+  background-color: var(--color-graphite);
+  transition: height 0.15s linear, background-color 0.4s ease;
+}
+
+/* Étape : apparaît quand elle arrive à l'écran */
+.journey-item {
+  position: relative;
+  padding-bottom: 1.5rem;
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.journey-item:last-child {
+  padding-bottom: 0;
+}
+
+.journey-item[data-visible='true'] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Cercle */
+.journey-node {
+  position: absolute;
+  top: 0;
+  left: calc(-1 * (var(--node) + 1rem));
+  width: var(--node);
+  height: var(--node);
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.journey-node:focus-visible {
+  outline: 2px solid var(--color-sky-mint);
+  outline-offset: 4px;
+  border-radius: 50%;
+}
+
+.journey-node-dot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  background-color: var(--color-off-white);
+  color: var(--color-graphite);
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: transform 0.3s ease, background-color 0.3s ease, color 0.4s ease, opacity 0.3s ease;
+}
+
+/* Petit pop quand l'étape apparaît */
+.journey-item[data-visible='true'] .journey-node-dot {
+  animation: journey-pop 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) backwards;
+}
+
+/* Anneau qui pulse sur le cercle actif */
+.journey-node-dot::after {
+  content: '';
+  position: absolute;
+  inset: -7px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.journey-item[data-active='true'] .journey-node-dot {
+  background-color: var(--color-sky-mint);
+  color: var(--color-graphite);
+  transform: scale(1.15);
+}
+
+.journey-item[data-active='true'] .journey-node-dot::after {
+  animation: journey-ring 1.4s ease-out infinite;
+}
+
+/* Période */
+.journey-period {
+  margin: 0 0 0.6rem;
+  color: var(--color-graphite);
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+  line-height: var(--node);
+  transition: color 0.4s ease;
+}
+
+/* Carte : repliée par défaut, un tap la déploie */
+.journey-card {
+  position: relative;
+  overflow: hidden;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--color-off-white) 10%, transparent);
+  border-radius: 1rem;
+  background-color: var(--color-graphite);
+  color: var(--color-off-white);
+  cursor: pointer;
+  transition: background-color 0.4s ease, border-color 0.3s ease;
+}
+
+.journey-item[data-active='true'] .journey-card {
+  border-color: var(--color-sky-mint);
+}
+
+/* Liseré mint en haut de la carte */
+.journey-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: var(--color-sky-mint);
+}
+
+.journey-card-title {
+  padding-right: 2rem;
+  color: var(--color-off-white);
+  font-size: 1.15rem;
+  line-height: 1.25;
+}
+
+.journey-card-place {
+  color: var(--color-sky-mint);
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+}
+
+/* Détail : se déploie en douceur */
+.journey-card-details {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s ease;
+}
+
+.journey-item[data-active='true'] .journey-card-details {
+  grid-template-rows: 1fr;
+}
+
+.journey-card-details-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.journey-card-points {
+  padding-top: 0.85rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.journey-item[data-active='true'] .journey-card-points {
+  opacity: 1;
+  transition-delay: 0.15s;
+}
+
+.journey-card-points li {
+  position: relative;
+  padding-left: 1.1rem;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.journey-card-points li + li {
+  margin-top: 0.4rem;
+}
+
+.journey-card-points li::before {
+  content: '›';
+  position: absolute;
+  left: 0;
+  color: var(--color-sky-mint);
+  font-weight: 700;
+}
+
+/* Icône + qui devient × quand la carte est ouverte */
+.journey-card-icon {
+  position: absolute;
+  top: 1.1rem;
+  right: 1.1rem;
+  color: var(--color-sky-mint);
+  font-size: 1.1rem;
+  line-height: 1;
+  transition: transform 0.3s ease;
+}
+
+.journey-item[data-active='true'] .journey-card-icon {
+  transform: rotate(45deg);
+}
+
+@keyframes journey-ring {
+  from {
+    opacity: 0.8;
+    transform: scale(0.75);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.35);
+  }
+}
+
+@keyframes journey-pop {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes journey-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes journey-end-pulse {
+  from {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(2.4);
+  }
+}
+
+/* =====================================================
+   DESKTOP (992px et plus) : le serpent
+   ===================================================== */
+@media (min-width: 992px) {
+  .journey {
+    --node: 44px;
+    --card-w: clamp(250px, 27vw, 340px);
+  }
+
+  /* Le tracé garde les proportions du SVG (1000 x 380) */
+  .journey-track {
+    --draw: 3.2s;
+    position: relative;
+    aspect-ratio: 1000 / 380;
+  }
+
+  .journey-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .journey-line-base,
+  .journey-line-draw {
+    fill: none;
+    stroke-linecap: round;
+  }
+
+  /* Rail en pointillés, façon circuit */
+  .journey-line-base {
+    stroke: var(--color-graphite);
+    stroke-width: 4;
+    stroke-dasharray: 1 16;
+    opacity: 0.45;
+    transition: stroke 0.4s ease;
+  }
+
+  /* Ligne pleine qui se dessine */
+  .journey-line-draw {
+    stroke: var(--color-graphite);
+    stroke-width: 6;
+    stroke-dasharray: 100 100;
+    stroke-dashoffset: 100;
+    transition: stroke 0.4s ease;
+  }
+
+  .journey-track[data-visible='true'] .journey-line-draw {
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset var(--draw) linear, stroke 0.4s ease;
+  }
+
+  /* Départ */
+  .journey-cap-start {
+    fill: var(--color-graphite);
+    transition: fill 0.4s ease;
+  }
+
+  /* Arrivée : anneau qui pulse */
+  .journey-cap-end {
+    fill: none;
+    stroke: var(--color-graphite);
+    stroke-width: 3;
+    transform-box: fill-box;
+    transform-origin: center;
+    opacity: 0;
+    transition: stroke 0.4s ease;
+  }
+
+  .journey-track[data-visible='true'] .journey-cap-end {
+    opacity: 1;
+    animation: journey-end-pulse 1.8s ease-out infinite;
+    animation-delay: var(--draw);
+  }
+
+  .journey-end-label {
+    position: absolute;
+    left: 12%;
+    top: 76.3%;
+    margin: 0;
+    transform: translate(-50%, 30px);
+    color: var(--color-graphite);
+    font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    opacity: 0;
+    transition: color 0.4s ease;
+  }
+
+  .journey-track[data-visible='true'] .journey-end-label {
+    animation: journey-fade 0.6s ease both;
+    animation-delay: var(--draw);
+  }
+
+  /* Les étapes se positionnent sur le tracé */
+  .journey-list {
+    position: absolute;
+    inset: 0;
+    padding-left: 0;
+  }
+
+  .journey-list::before,
+  .journey-list::after {
+    display: none;
+  }
+
+  .journey-item {
+    position: absolute;
+    top: var(--y);
+    left: var(--x);
+    width: 0;
+    height: 0;
+    padding-bottom: 0;
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .journey-item[data-active='true'] {
+    z-index: 5;
+  }
+
+  .journey-node {
+    top: calc(var(--node) / -2);
+    left: calc(var(--node) / -2);
+    opacity: 0;
+  }
+
+  .journey-node-dot {
+    font-size: 0.9rem;
+  }
+
+  /* Pas d'animation d'apparition au scroll sur desktop */
+  .journey-item[data-visible='true'] .journey-node-dot {
+    animation: none;
+  }
+
+  /* Le cercle apparaît quand la ligne l'atteint */
+  .journey-track[data-visible='true'] .journey-node {
+    animation: journey-pop 0.45s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+    animation-delay: calc(var(--t) * var(--draw));
+  }
+
+  /* Quand une étape est survolée, les autres s'estompent */
+  .journey-list:has(.journey-item[data-active='true'])
+    .journey-item[data-active='false']
+    .journey-node-dot {
+    opacity: 0.4;
+  }
+
+  /* Période posée du côté opposé à la carte */
+  .journey-period {
+    position: absolute;
+    left: 0;
+    margin: 0;
+    line-height: 1.2;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateX(-50%);
+  }
+
+  .journey-track[data-visible='true'] .journey-period {
+    animation: journey-fade 0.5s ease both;
+    animation-delay: calc(var(--t) * var(--draw) + 0.2s);
+  }
+
+  .journey-item[data-side='down'] .journey-period {
+    bottom: calc(var(--node) / 2 + 12px);
+  }
+
+  .journey-item[data-side='up'] .journey-period {
+    top: calc(var(--node) / 2 + 12px);
+  }
+
+  /* Carte : cachée, puis déployée au survol */
+  .journey-card {
+    position: absolute;
+    left: 0;
+    width: var(--card-w);
+    margin-left: calc(var(--card-w) / -2);
+    padding: 1.5rem;
+    cursor: default;
+    pointer-events: none;
+    visibility: hidden;
+    opacity: 0;
+    box-shadow: 0 24px 48px -20px color-mix(in srgb, var(--color-graphite) 65%, transparent);
+    transition:
+      opacity 0.35s ease,
+      transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
+      clip-path 0.5s cubic-bezier(0.7, 0, 0.2, 1),
+      visibility 0s linear 0.5s,
+      background-color 0.4s ease;
+  }
+
+  .journey-item[data-side='down'] .journey-card {
+    top: calc(var(--node) / 2 + 16px);
+    clip-path: inset(0 0 100% 0 round 1rem);
+    transform: translateY(12px) scale(0.96);
+  }
+
+  .journey-item[data-side='up'] .journey-card {
+    bottom: calc(var(--node) / 2 + 16px);
+    clip-path: inset(100% 0 0 0 round 1rem);
+    transform: translateY(-12px) scale(0.96);
+  }
+
+  .journey-item[data-active='true'] .journey-card {
+    visibility: visible;
+    opacity: 1;
+    clip-path: inset(0 0 0 0 round 1rem);
+    transform: none;
+    transition:
+      opacity 0.35s ease,
+      transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
+      clip-path 0.5s cubic-bezier(0.7, 0, 0.2, 1),
+      visibility 0s,
+      background-color 0.4s ease;
+  }
+
+  /* Sur desktop, le détail est toujours déplié et l'icône inutile */
+  .journey-card-title {
+    padding-right: 0;
+  }
+
+  .journey-card-details {
+    grid-template-rows: 1fr;
+    transition: none;
+  }
+
+  .journey-card-points {
+    opacity: 1;
+  }
+
+  .journey-card-icon {
+    display: none;
+  }
+
+  /* Le contenu de la carte arrive ligne par ligne */
+  .journey-card > * {
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .journey-item[data-active='true'] .journey-card > * {
+    opacity: 1;
+    transform: none;
+  }
+
+  .journey-item[data-active='true'] .journey-card > :nth-child(1) {
+    transition-delay: 0.15s;
+  }
+
+  .journey-item[data-active='true'] .journey-card > :nth-child(2) {
+    transition-delay: 0.22s;
+  }
+
+  .journey-item[data-active='true'] .journey-card > :nth-child(3) {
+    transition-delay: 0.29s;
+  }
+}
+
+/* Grands écrans : cercles plus gros */
+@media (min-width: 1200px) {
+  .journey {
+    --node: 52px;
+  }
+}
+
+/* =====================================================
+   ÉTAT SCROLLÉ (fond graphite)
+   ===================================================== */
+body[data-scrolled='true'] .journey::before {
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--color-sky-mint) 22%, transparent) 1px,
+    transparent 1px
+  );
+}
+
+body[data-scrolled='true'] .journey-eyebrow,
+body[data-scrolled='true'] .journey-title-accent,
+body[data-scrolled='true'] .journey-period,
+body[data-scrolled='true'] .journey-end-label {
+  color: var(--color-sky-mint);
+}
+
+body[data-scrolled='true'] .journey-title,
+body[data-scrolled='true'] .journey-hint {
+  color: var(--color-off-white);
+}
+
+body[data-scrolled='true'] .journey-list::before {
+  background-color: color-mix(in srgb, var(--color-sky-mint) 25%, transparent);
+}
+
+body[data-scrolled='true'] .journey-list::after {
+  background-color: var(--color-sky-mint);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--color-sky-mint) 60%, transparent);
+}
+
+body[data-scrolled='true'] .journey-line-base,
+body[data-scrolled='true'] .journey-line-draw,
+body[data-scrolled='true'] .journey-cap-end {
+  stroke: var(--color-sky-mint);
+}
+
+body[data-scrolled='true'] .journey-line-draw {
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-sky-mint) 60%, transparent));
+}
+
+body[data-scrolled='true'] .journey-cap-start {
+  fill: var(--color-sky-mint);
+}
+
+body[data-scrolled='true'] .journey-node-dot {
+  background-color: var(--color-graphite);
+  color: var(--color-sky-mint);
+}
+
+body[data-scrolled='true'] .journey-item[data-active='true'] .journey-node-dot {
+  background-color: var(--color-sky-mint);
+  color: var(--color-graphite);
+}
+
+/* Cartes plus claires que le fond pour rester visibles */
+body[data-scrolled='true'] .journey-card {
+  background-color: var(--color-graphite-light);
+}
+
+/* =====================================================
+   ACCESSIBILITÉ : pas d'animation si l'utilisateur la désactive
+   ===================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .journey-line-draw {
+    stroke-dashoffset: 0 !important;
+    transition: none !important;
+  }
+
+  .journey-item {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .journey-node,
+  .journey-period,
+  .journey-end-label,
+  .journey-cap-end {
+    opacity: 1 !important;
+    animation: none !important;
+  }
+
+  .journey-item[data-visible='true'] .journey-node-dot,
+  .journey-node-dot::after {
+    animation: none !important;
+  }
+
+  .journey-card,
+  .journey-card > *,
+  .journey-card-details,
+  .journey-card-points {
+    transition: none !important;
+  }
+}

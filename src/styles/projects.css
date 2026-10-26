@@ -1,0 +1,438 @@
+/* ===== Section ===== */
+.projects {
+  color: var(--color-graphite);
+}
+
+.projects-label,
+.projects-category-label,
+.projects-index,
+.projects-status,
+.projects-hint,
+.projects-back-label,
+.projects-back-name,
+.projects-tag,
+.projects-link {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.projects-label {
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  color: var(--color-graphite);
+}
+
+.projects-title {
+  max-width: 22ch;
+  margin-bottom: 2rem;
+  font-size: clamp(1.75rem, 4vw, 3rem);
+  line-height: 1.1;
+}
+
+/* ===== Sélecteur à trois onglets ===== */
+.projects-tabs {
+  grid-template-columns: repeat(3, 1fr);
+  max-width: 44rem;
+  padding: 4px;
+  margin-bottom: 2rem;
+  border: 1px solid var(--color-graphite);
+  border-radius: 999px;
+}
+
+.projects-pill {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc((100% - 8px) / 3);
+  border-radius: 999px;
+  background-color: var(--color-graphite);
+  transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.projects-tabs[data-active='1'] .projects-pill {
+  transform: translateX(100%);
+}
+
+.projects-tabs[data-active='2'] .projects-pill {
+  transform: translateX(200%);
+}
+
+.projects-tab {
+  position: relative;
+  z-index: 1;
+  padding: 0.65rem 0.5rem;
+  border: 0;
+  background: transparent;
+  color: var(--color-graphite);
+  font-size: clamp(0.7rem, 2.6vw, 0.95rem);
+  font-weight: 600;
+  white-space: nowrap;
+  transition: color 0.3s ease;
+}
+
+.projects-tab[data-active='true'] {
+  color: var(--color-off-white);
+}
+
+/* Petit écran : seulement les icônes pour que les trois onglets tiennent */
+.projects-tab span {
+  display: none;
+}
+
+.projects-tab i {
+  font-size: 1.1rem;
+}
+
+@media (min-width: 576px) {
+  .projects-tab span {
+    display: inline;
+  }
+
+  .projects-tab i {
+    font-size: 1rem;
+  }
+}
+
+/* ===== Panneau d'une catégorie ===== */
+.projects-panel {
+  animation: projects-panel-in 0.5s ease both;
+}
+
+@keyframes projects-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.projects-category-label {
+  margin-bottom: 0.25rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+}
+
+.projects-intro {
+  max-width: 48ch;
+  margin-bottom: 1.75rem;
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+/* ===== Carte retournable ===== */
+.projects-card {
+  --mx: 50%;
+  --my: 50%;
+  position: relative;
+  height: 22rem;
+  perspective: 1200px;
+  cursor: pointer;
+  outline: none;
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.6s ease var(--d),
+    transform 0.6s ease var(--d);
+}
+
+.projects[data-visible='true'] .projects-card {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Lumière mint sur les bords : vit derrière la carte, ne tourne pas */
+.projects-card-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 1.5rem;
+  pointer-events: none;
+}
+
+.projects-card[data-flipped='true'] .projects-card-glow {
+  animation: projects-pulse 1.1s ease-out both;
+}
+
+@keyframes projects-pulse {
+  0% {
+    box-shadow:
+      0 0 0 0 rgba(184, 247, 228, 0.9),
+      0 0 0 0 rgba(184, 247, 228, 0.5);
+  }
+  55% {
+    box-shadow:
+      0 0 0 10px rgba(184, 247, 228, 0),
+      0 0 48px 8px rgba(184, 247, 228, 0.55);
+  }
+  100% {
+    box-shadow:
+      0 0 0 14px rgba(184, 247, 228, 0),
+      0 0 30px 2px rgba(184, 247, 228, 0.3);
+  }
+}
+
+/* Le bloc qui tourne */
+.projects-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.projects-card[data-flipped='true'] .projects-card-inner {
+  transform: rotateY(180deg);
+}
+
+/* Les deux faces */
+.projects-card-face {
+  position: absolute;
+  inset: 0;
+  padding: 1.5rem;
+  overflow: hidden;
+  border: 1px solid var(--color-graphite-light);
+  border-radius: 1.5rem;
+  background-color: var(--color-graphite);
+  color: var(--color-off-white);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition: border-color 0.3s ease;
+}
+
+.projects-card:hover .projects-card-front,
+.projects-card:focus-visible .projects-card-front {
+  border-color: var(--color-sky-mint);
+}
+
+/* Face avant : fond à points + halo qui suit la souris */
+.projects-card-front {
+  background-image: radial-gradient(
+    rgba(237, 242, 244, 0.1) 1px,
+    transparent 1px
+  );
+  background-size: 18px 18px;
+}
+
+.projects-card-front::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle 11rem at var(--mx) var(--my),
+    rgba(184, 247, 228, 0.14),
+    transparent
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.projects-card:hover .projects-card-front::before {
+  opacity: 1;
+}
+
+.projects-card-front > * {
+  position: relative;
+}
+
+.projects-index {
+  font-size: 2.75rem;
+  font-weight: 700;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--color-sky-mint);
+}
+
+.projects-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--color-graphite-light);
+  border-radius: 999px;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.projects-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background-color: #8a8f98;
+}
+
+.projects-card[data-status='production'] .projects-dot {
+  background-color: #2e9e6b;
+}
+
+.projects-card[data-status='soon'] .projects-dot {
+  background-color: #d9a441;
+}
+
+.projects-card[data-status='dev'] .projects-dot {
+  background-color: #4a8fd9;
+}
+
+.projects-card[data-status='private'] .projects-dot {
+  background-color: #8a8f98;
+}
+
+.projects-card[data-status='past'] .projects-dot {
+  background-color: #8a8f98;
+}
+
+.projects-card-title {
+  margin-bottom: 0.5rem;
+  font-size: 1.6rem;
+  line-height: 1.15;
+}
+
+.projects-card-context {
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  opacity: 0.8;
+}
+
+.projects-hint {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--color-sky-mint);
+}
+
+.projects-hint i {
+  transition: transform 0.5s ease;
+}
+
+.projects-card:hover .projects-hint i {
+  transform: rotate(180deg);
+}
+
+/* Face arrière : tournée de 180° pour apparaître à l'endroit */
+.projects-card-back {
+  transform: rotateY(180deg);
+  border-color: var(--color-sky-mint);
+}
+
+.projects-back-name {
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  color: var(--color-sky-mint);
+}
+
+.projects-back-icon {
+  color: var(--color-sky-mint);
+}
+
+.projects-back-body {
+  flex: 1;
+  margin-top: 1rem;
+  overflow-y: auto;
+}
+
+.projects-back-label {
+  margin: 0.9rem 0 0.3rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--color-sky-mint);
+}
+
+.projects-back-label:first-child {
+  margin-top: 0;
+}
+
+.projects-back-text {
+  margin-bottom: 0;
+  font-size: 0.95rem;
+}
+
+.projects-tag {
+  padding: 0.2rem 0.65rem;
+  border: 1px solid var(--color-sky-mint);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  color: var(--color-sky-mint);
+}
+
+.projects-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.5rem 1.1rem;
+  border-radius: 999px;
+  background-color: var(--color-sky-mint);
+  color: var(--color-graphite);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* ===== Desktop : cartes un peu plus hautes et aérées ===== */
+@media (min-width: 992px) {
+  .projects-card {
+    height: 23rem;
+  }
+
+  .projects-card-face {
+    padding: 1.75rem;
+  }
+}
+
+/* ===== Mouvement réduit ===== */
+@media (prefers-reduced-motion: reduce) {
+  .projects-card-inner {
+    transition-duration: 0.01s;
+  }
+
+  .projects-card[data-flipped='true'] .projects-card-glow {
+    animation: none;
+  }
+}
+
+/* ===== État scrollé ===== */
+body[data-scrolled='true'] .projects {
+  color: var(--color-off-white);
+}
+
+body[data-scrolled='true'] .projects-label,
+body[data-scrolled='true'] .projects-category-label {
+  color: var(--color-sky-mint);
+}
+
+body[data-scrolled='true'] .projects-tabs {
+  border-color: var(--color-sky-mint);
+}
+
+body[data-scrolled='true'] .projects-pill {
+  background-color: var(--color-sky-mint);
+}
+
+body[data-scrolled='true'] .projects-tab {
+  color: var(--color-off-white);
+}
+
+body[data-scrolled='true'] .projects-tab[data-active='true'] {
+  color: var(--color-graphite);
+}
+
+body[data-scrolled='true'] .projects-card-face {
+  border-color: var(--color-graphite-light);
+  background-color: var(--color-graphite-light);
+}
+
+body[data-scrolled='true'] .projects-card-back {
+  border-color: var(--color-sky-mint);
+}
+
+body[data-scrolled='true'] .projects-card:hover .projects-card-front,
+body[data-scrolled='true'] .projects-card:focus-visible .projects-card-front {
+  border-color: var(--color-sky-mint);
+}
+
+body[data-scrolled='true'] .projects-status {
+  border-color: var(--color-graphite);
+}

@@ -1,0 +1,84 @@
+/* Fond graphite de tout le héros, 75% de la hauteur de l'écran */
+.heros {
+  min-height: 75vh;
+  background-color: var(--color-graphite);
+  border-radius: 1.5rem;
+  transition: background-color 0.4s ease;
+}
+
+/* Titre */
+.heros-title {
+  color: var(--color-off-white);
+  font-size: clamp(2rem, 4.5vw, 4rem);
+  line-height: 1.1;
+}
+
+/* "PRODUITS DIGITAUX" en sky mint */
+.heros-title-accent {
+  color: var(--color-sky-mint);
+}
+
+/* Sous-titre */
+.heros-subtitle {
+  color: var(--color-off-white);
+  font-size: clamp(1rem, 1.8vw, 1.5rem);
+}
+
+/* Colonne mint : hauteur propre sur mobile, car l'image est en absolute */
+.heros-visual {
+  min-height: 24rem;
+  background-color: var(--color-sky-mint);
+  border-radius: 1.5rem;
+  overflow: hidden;
+}
+
+/* Image entière, jamais rognée, posée en bas du bloc mint */
+.heros-image {
+  object-fit: contain;
+  object-position: center bottom;
+}
+
+/* ===== Boutons du héros ===== */
+.heros-btn {
+  padding: 0.75rem 1.75rem;
+  border: 2px solid var(--color-sky-mint);
+  border-radius: 999px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Bouton plein : fond mint */
+.heros-btn-primary {
+  background-color: var(--color-sky-mint);
+  color: var(--color-graphite);
+}
+
+.heros-btn-primary:hover {
+  background-color: transparent;
+  color: var(--color-sky-mint);
+}
+
+/* Bouton contour : sans fond, texte mint */
+.heros-btn-secondary {
+  background-color: transparent;
+  color: var(--color-sky-mint);
+}
+
+.heros-btn-secondary:hover {
+  background-color: var(--color-sky-mint);
+  color: var(--color-graphite);
+}
+
+/* ===== Tablette et plus : les colonnes sont côte à côte ===== */
+@media (min-width: 768px) {
+  /* La colonne mint s'étire à la hauteur de la ligne, comme avant */
+  .heros-visual {
+    min-height: 0;
+  }
+}
+
+/* ===== État scrollé ===== */
+body[data-scrolled='true'] .heros {
+  background-color: transparent;
+}

@@ -1,0 +1,159 @@
+.about {
+  background-color: transparent;
+}
+
+/* ===== Liste des rôles avec ligne verticale ===== */
+.about-roles {
+  position: relative;
+}
+
+/* Ligne mint en dégradé : elle s'efface aux deux extrémités */
+.about-roles::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 9px;
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--color-sky-mint) 15%,
+    var(--color-sky-mint) 85%,
+    transparent
+  );
+}
+
+.about-role {
+  position: relative;
+  gap: 1.25rem;
+  padding: 1.1rem 0 1.1rem 3.5rem;
+  transition: transform 0.3s ease;
+}
+
+.about-role:hover {
+  transform: translateX(8px);
+}
+
+/* Cercle posé sur la ligne, avec un halo mint */
+.about-role-dot {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  transform: translateY(-50%);
+  border: 3px solid var(--color-sky-mint);
+  border-radius: 50%;
+  background-color: var(--color-graphite);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--color-sky-mint) 30%, transparent);
+  transition: background-color 0.3s ease;
+}
+
+.about-role:hover .about-role-dot {
+  background-color: var(--color-sky-mint);
+}
+
+/* Tuile arrondie qui porte l'icône */
+.about-role-icon-box {
+  flex: 0 0 auto;
+  width: 56px;
+  height: 56px;
+  border-radius: 1rem;
+  background-color: var(--color-graphite);
+  color: var(--color-off-white);
+  font-size: 1.6rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.about-role:hover .about-role-icon-box {
+  background-color: var(--color-sky-mint);
+  color: var(--color-graphite);
+}
+
+.about-role-title {
+  font-size: 1.35rem;
+  color: var(--color-graphite);
+  transition: color 0.4s ease;
+}
+
+/* ===== Label façon terminal ===== */
+.about-eyebrow {
+  color: var(--color-graphite);
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  transition: color 0.4s ease;
+}
+
+/* ===== Titre ===== */
+.about-title {
+  color: var(--color-graphite);
+  font-size: clamp(1.75rem, 3.5vw, 3rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  transition: color 0.4s ease;
+}
+
+.about-title-accent {
+  color: var(--color-graphite);
+  transition: color 0.4s ease;
+}
+
+/* ===== Texte ===== */
+.about-text {
+  max-width: 60ch;
+  color: var(--color-graphite);
+  font-size: clamp(1rem, 1.3vw, 1.1rem);
+  line-height: 1.7;
+  transition: color 0.4s ease;
+}
+
+/* ===== Chiffres : filet fin, sans carte ===== */
+.about-stat {
+  border-top: 1px solid var(--color-graphite);
+  transition: border-color 0.4s ease;
+}
+
+.about-stat-value {
+  color: var(--color-graphite);
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 300;
+  line-height: 1;
+  transition: color 0.4s ease;
+}
+
+.about-stat-label {
+  color: var(--color-graphite);
+  font-size: 0.85rem;
+  transition: color 0.4s ease;
+}
+
+/* ===== État scrollé (fond graphite) ===== */
+body[data-scrolled='true'] .about-role-title,
+body[data-scrolled='true'] .about-title,
+body[data-scrolled='true'] .about-text,
+body[data-scrolled='true'] .about-stat-label {
+  color: var(--color-off-white);
+}
+
+body[data-scrolled='true'] .about-eyebrow,
+body[data-scrolled='true'] .about-title-accent,
+body[data-scrolled='true'] .about-stat-value {
+  color: var(--color-sky-mint);
+}
+
+body[data-scrolled='true'] .about-stat {
+  border-top-color: var(--color-sky-mint);
+}
+
+/* Tuiles plus claires que le fond pour rester visibles */
+body[data-scrolled='true'] .about-role-icon-box {
+  background-color: var(--color-graphite-light);
+}
+
+body[data-scrolled='true'] .about-role:hover .about-role-icon-box,
+body[data-scrolled='true'] .about-role:hover .about-role-dot {
+  background-color: var(--color-sky-mint);
+}

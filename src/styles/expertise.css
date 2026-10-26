@@ -1,0 +1,286 @@
+.expertise {
+  position: relative;
+  background-color: transparent;
+}
+
+/* Fond de points façon grille technique, estompé vers les bords */
+.expertise::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--color-graphite) 18%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 24px 24px;
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+  mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+}
+
+.expertise-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== En-tête ===== */
+.expertise-eyebrow {
+  color: var(--color-graphite);
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  transition: color 0.4s ease;
+}
+
+.expertise-title {
+  max-width: 24ch;
+  color: var(--color-graphite);
+  font-size: clamp(1.75rem, 3.8vw, 3.25rem);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  transition: color 0.4s ease;
+}
+
+.expertise-title-accent {
+  color: var(--color-graphite);
+  transition: color 0.4s ease;
+}
+
+/* ===== Cellules du bento ===== */
+.expertise-cell {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--color-off-white) 10%, transparent);
+  border-radius: 1.25rem;
+  background-color: var(--color-graphite);
+  color: var(--color-off-white);
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.6s ease calc(var(--d) * 0.1s),
+    transform 0.6s ease calc(var(--d) * 0.1s),
+    border-color 0.3s ease,
+    background-color 0.4s ease;
+}
+
+.expertise-cell[data-visible='true'] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Halo mint qui suit la souris */
+.expertise-cell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    260px circle at var(--mx, 50%) var(--my, 0%),
+    color-mix(in srgb, var(--color-sky-mint) 16%, transparent),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.expertise-cell:hover::before {
+  opacity: 1;
+}
+
+.expertise-cell:hover {
+  border-color: var(--color-sky-mint);
+}
+
+/* Le contenu passe au-dessus du halo */
+.expertise-cell > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== Textes des cellules ===== */
+.expertise-cell-label {
+  color: var(--color-sky-mint);
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+}
+
+.expertise-cell-title {
+  color: var(--color-off-white);
+  font-size: clamp(1.15rem, 1.8vw, 1.5rem);
+  line-height: 1.25;
+}
+
+.expertise-cell-benefit {
+  color: var(--color-sky-mint);
+  font-weight: 600;
+}
+
+.expertise-cell-proof {
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--color-sky-mint);
+  color: var(--color-off-white);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  opacity: 0.85;
+}
+
+.expertise-cell .bi {
+  color: var(--color-sky-mint);
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+/* ===== Pipeline ===== */
+.expertise-steps {
+  position: relative;
+}
+
+/* Ligne de fond */
+.expertise-steps::before,
+.expertise-steps::after {
+  content: '';
+  position: absolute;
+  top: 22px;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+}
+
+.expertise-steps::before {
+  background-color: color-mix(in srgb, var(--color-off-white) 20%, transparent);
+}
+
+/* Ligne mint qui se remplit */
+.expertise-steps::after {
+  background-color: var(--color-sky-mint);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.expertise-cell[data-visible='true'] .expertise-steps::after {
+  transform: scaleX(1);
+  transition: transform 1.6s linear 0.3s;
+}
+
+.expertise-step {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.expertise-step-dot {
+  width: 44px;
+  height: 44px;
+  border: 2px solid color-mix(in srgb, var(--color-off-white) 30%, transparent);
+  border-radius: 50%;
+  background-color: var(--color-graphite);
+  color: var(--color-off-white);
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+}
+
+/* Chaque étape s'allume l'une après l'autre */
+.expertise-cell[data-visible='true'] .expertise-step-dot {
+  border-color: var(--color-sky-mint);
+  background-color: var(--color-sky-mint);
+  color: var(--color-graphite);
+  transition:
+    background-color 0.4s ease calc(var(--i) * 0.4s + 0.3s),
+    border-color 0.4s ease calc(var(--i) * 0.4s + 0.3s),
+    color 0.4s ease calc(var(--i) * 0.4s + 0.3s);
+}
+
+.expertise-step-label {
+  color: var(--color-off-white);
+  font-size: clamp(0.7rem, 1.2vw, 0.9rem);
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ===== Étiquettes ===== */
+.expertise-chip-main {
+  padding: 0.5rem 1.1rem;
+  border-radius: 999px;
+  background-color: var(--color-sky-mint);
+  color: var(--color-graphite);
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.expertise-chip {
+  padding: 0.3rem 0.8rem;
+  border: 1px solid color-mix(in srgb, var(--color-off-white) 30%, transparent);
+  border-radius: 999px;
+  color: var(--color-off-white);
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 0.8rem;
+}
+
+/* ===== Bandeau de conclusion ===== */
+.expertise-benefit {
+  color: var(--color-off-white);
+  font-weight: 600;
+}
+
+.expertise-cta {
+  flex: 0 0 auto;
+  padding: 0.75rem 1.75rem;
+  border: 2px solid var(--color-sky-mint);
+  border-radius: 999px;
+  background-color: var(--color-sky-mint);
+  color: var(--color-graphite);
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.expertise-cta:hover {
+  background-color: transparent;
+  color: var(--color-sky-mint);
+}
+
+/* ===== État scrollé (fond graphite) ===== */
+body[data-scrolled='true'] .expertise::before {
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--color-sky-mint) 22%, transparent) 1px,
+    transparent 1px
+  );
+}
+
+body[data-scrolled='true'] .expertise-eyebrow,
+body[data-scrolled='true'] .expertise-title-accent {
+  color: var(--color-sky-mint);
+}
+
+body[data-scrolled='true'] .expertise-title {
+  color: var(--color-off-white);
+}
+
+/* Cellules plus claires que le fond pour rester visibles */
+body[data-scrolled='true'] .expertise-cell {
+  background-color: var(--color-graphite-light);
+}
+
+body[data-scrolled='true'] .expertise-step-dot {
+  background-color: var(--color-graphite-light);
+}
+
+/* ===== Accessibilité : pas d'animation si l'utilisateur la désactive ===== */
+@media (prefers-reduced-motion: reduce) {
+  .expertise-cell {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .expertise-steps::after {
+    transform: scaleX(1);
+    transition: none;
+  }
+}

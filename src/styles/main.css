@@ -1,0 +1,9 @@
+.main-container {
+  min-height: 100vh;
+  background-color: var(--color-off-white);
+  transition: background-color 0.4s ease;
+}
+
+body[data-scrolled='true'] .main-container {
+  background-color: var(--color-graphite);
+}

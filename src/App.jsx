@@ -1,5 +1,5 @@
 import { useScrollTheme } from './hooks/useScrollTheme'
-import { NavBar } from './components/navbar/NavBar'
+import { NavBar } from './components/NavBar/navbar'
 import { Heros } from './components/heros/heros'
 import { About } from './components/About/About'
 import { Expertise } from './components/Expertise/expertise'

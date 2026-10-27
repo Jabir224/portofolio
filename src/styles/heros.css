@@ -24,20 +24,6 @@
   font-size: clamp(1rem, 1.8vw, 1.5rem);
 }
 
-/* Colonne mint : hauteur propre sur mobile, car l'image est en absolute */
-.heros-visual {
-  min-height: 24rem;
-  background-color: var(--color-sky-mint);
-  border-radius: 1.5rem;
-  overflow: hidden;
-}
-
-/* Image entière, jamais rognée, posée en bas du bloc mint */
-.heros-image {
-  object-fit: contain;
-  object-position: center bottom;
-}
-
 /* ===== Boutons du héros ===== */
 .heros-btn {
   padding: 0.75rem 1.75rem;
@@ -70,9 +56,39 @@
   color: var(--color-graphite);
 }
 
+/* ===== Colonne de droite : portrait incrusté ===== */
+.heros-visual {
+  /* Décalage horizontal : tu es à droite dans la photo d'origine, on te recentre */
+  --shift: -8%;
+  /* Hauteur propre sur mobile, car l'image est en absolute */
+  min-height: 24rem;
+}
+
+/*
+  Image :
+  - mix-blend-mode: lighten : le fond sombre de la photo prend la couleur du graphite derrière
+  - mask : fondu sur les côtés et en bas pour éviter tout bord visible
+    (deux dégradés croisés : seule la zone commune reste visible)
+  - transform : recentrage horizontal
+  Pas de cercle, pas de z-index : l'image est seule dans sa colonne.
+*/
+.heros-image {
+  object-fit: contain;
+  object-position: center bottom;
+  mix-blend-mode: lighten;
+  transform: translateX(var(--shift));
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%),
+    linear-gradient(to bottom, #000 82%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%),
+    linear-gradient(to bottom, #000 82%, transparent 100%);
+  mask-composite: intersect;
+}
+
 /* ===== Tablette et plus : les colonnes sont côte à côte ===== */
 @media (min-width: 768px) {
-  /* La colonne mint s'étire à la hauteur de la ligne, comme avant */
   .heros-visual {
     min-height: 0;
   }

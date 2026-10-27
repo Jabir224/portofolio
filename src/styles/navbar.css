@@ -128,3 +128,317 @@ body[data-scrolled='true'] .lang-switch[data-lang='FR'] .lang-switch__label--fr,
 body[data-scrolled='true'] .lang-switch[data-lang='EN'] .lang-switch__label--en {
   color: var(--color-off-white);
 }
+
+/* ===================================================================
+   MOBILE (sous 992 px) : ajouté à côté, le desktop n'est pas touché
+   =================================================================== */
+
+/* Barre mobile : au-dessus du menu plein écran */
+.navbar-mobile {
+  position: relative;
+  z-index: 2;
+}
+
+.navbar-mobile-title {
+  font-size: 1.35rem;
+}
+
+/* ----- Burger : deux traits de longueurs différentes ----- */
+.navbar-burger {
+  position: relative;
+  flex: 0 0 auto;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.navbar-burger:focus-visible {
+  outline: 2px solid var(--color-sky-mint);
+  outline-offset: 2px;
+}
+
+.navbar-burger-line {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 2px;
+  margin-top: -1px;
+  border-radius: 2px;
+  background-color: var(--color-graphite);
+  transition:
+    transform 0.45s cubic-bezier(0.65, 0, 0.35, 1),
+    width 0.45s cubic-bezier(0.65, 0, 0.35, 1),
+    margin-left 0.45s cubic-bezier(0.65, 0, 0.35, 1),
+    background-color 0.3s ease;
+}
+
+/* Trait du haut : long, centré */
+.navbar-burger-line:first-child {
+  width: 1.5rem;
+  margin-left: -0.75rem;
+  transform: translateY(-4px);
+}
+
+/* Trait du bas : court, aligné à droite */
+.navbar-burger-line:last-child {
+  width: 1rem;
+  margin-left: -0.25rem;
+  transform: translateY(4px);
+}
+
+/* Ouvert : les deux traits deviennent une croix */
+.navbar-burger[data-open='true'] .navbar-burger-line:first-child {
+  transform: translateY(0) rotate(45deg);
+}
+
+.navbar-burger[data-open='true'] .navbar-burger-line:last-child {
+  width: 1.5rem;
+  margin-left: -0.75rem;
+  transform: translateY(0) rotate(-45deg);
+}
+
+/* ----- Menu plein écran : s'ouvre en cercle depuis le burger ----- */
+.navbar-menu {
+  --d: 0ms;
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  overflow-y: auto;
+  background-color: var(--color-graphite);
+  background-image: radial-gradient(
+    rgba(237, 242, 244, 0.07) 1px,
+    transparent 1px
+  );
+  background-size: 20px 20px;
+  clip-path: circle(0 at calc(100% - 2.4rem) 1.9rem);
+  visibility: hidden;
+  transition:
+    clip-path 0.7s cubic-bezier(0.65, 0, 0.35, 1),
+    visibility 0s linear 0.7s;
+}
+
+.navbar-menu[data-open='true'] {
+  clip-path: circle(150% at calc(100% - 2.4rem) 1.9rem);
+  visibility: visible;
+  transition:
+    clip-path 0.7s cubic-bezier(0.65, 0, 0.35, 1),
+    visibility 0s;
+}
+
+.navbar-menu-inner {
+  min-height: 100%;
+  padding: 5.5rem 1.5rem 2rem;
+}
+
+/* Petits labels monospace */
+.navbar-menu-label,
+.navbar-menu-index,
+.navbar-menu-place {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.navbar-menu-label {
+  margin: 0 0 1rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--color-sky-mint);
+}
+
+/* Apparition en cascade : fermé = caché, ouvert = visible avec un délai --d */
+.navbar-menu-label,
+.navbar-menu-item,
+.navbar-menu-footer {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.navbar-menu[data-open='true'] .navbar-menu-label,
+.navbar-menu[data-open='true'] .navbar-menu-item,
+.navbar-menu[data-open='true'] .navbar-menu-footer {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 0.6s ease calc(0.3s + var(--d)),
+    transform 0.6s ease calc(0.3s + var(--d));
+}
+
+/* Liste des liens */
+.navbar-menu-item {
+  border-top: 1px solid rgba(237, 242, 244, 0.12);
+}
+
+.navbar-menu-item:last-child {
+  border-bottom: 1px solid rgba(237, 242, 244, 0.12);
+}
+
+.navbar-menu-link {
+  gap: 1rem;
+  padding: 1.1rem 0;
+  color: var(--color-off-white);
+  text-decoration: none;
+}
+
+.navbar-menu-index {
+  width: 2rem;
+  font-size: 0.8rem;
+  color: var(--color-sky-mint);
+}
+
+.navbar-menu-text {
+  font-size: clamp(1.9rem, 8vw, 2.6rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.navbar-menu-arrow {
+  color: var(--color-sky-mint);
+  opacity: 0.5;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+/* Au toucher / survol / focus : le texte passe en mint et glisse */
+.navbar-menu-link:hover .navbar-menu-text,
+.navbar-menu-link:active .navbar-menu-text,
+.navbar-menu-link:focus-visible .navbar-menu-text {
+  color: var(--color-sky-mint);
+  transform: translateX(8px);
+}
+
+.navbar-menu-link:hover .navbar-menu-arrow,
+.navbar-menu-link:active .navbar-menu-arrow,
+.navbar-menu-link:focus-visible .navbar-menu-arrow {
+  opacity: 1;
+  transform: translate(3px, -3px);
+}
+
+/* Bas du menu : liens externes + lieu */
+.navbar-menu-footer {
+  margin-top: auto;
+  padding-top: 2.5rem;
+}
+
+.navbar-menu-social {
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--color-graphite-light);
+  border-radius: 50%;
+  color: var(--color-off-white);
+  font-size: 1.1rem;
+  text-decoration: none;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease;
+}
+
+.navbar-menu-social:hover,
+.navbar-menu-social:active,
+.navbar-menu-social:focus-visible {
+  border-color: var(--color-sky-mint);
+  background-color: var(--color-sky-mint);
+  color: var(--color-graphite);
+}
+
+.navbar-menu-place {
+  margin: 1.5rem 0 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--color-off-white);
+  opacity: 0.8;
+}
+
+.navbar-menu-dot {
+  position: relative;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background-color: var(--color-sky-mint);
+}
+
+.navbar-menu-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background-color: var(--color-sky-mint);
+  animation: navbar-ping 2s ease-out infinite;
+}
+
+@keyframes navbar-ping {
+  from {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(3);
+  }
+}
+
+/* ----- Menu ouvert : la barre prend les couleurs du fond graphite ----- */
+.navbar-container[data-open='true'] .navbar-title {
+  color: var(--color-sky-mint);
+}
+
+.navbar-container[data-open='true'] .navbar-burger-line {
+  background-color: var(--color-off-white);
+}
+
+/* Toggle de langue : lisible sur le fond graphite du menu */
+body .navbar-container[data-open='true'] .lang-switch {
+  background-color: var(--color-graphite-light);
+}
+
+body .navbar-container[data-open='true'] .lang-switch__knob {
+  background-color: var(--color-sky-mint);
+}
+
+body .navbar-container[data-open='true'] .lang-switch__label {
+  color: var(--color-off-white);
+}
+
+body .navbar-container[data-open='true'] .lang-switch[data-lang='FR'] .lang-switch__label--fr,
+body .navbar-container[data-open='true'] .lang-switch[data-lang='EN'] .lang-switch__label--en {
+  color: var(--color-graphite);
+}
+
+/* ----- État scrollé : le burger passe en clair sur le graphite ----- */
+body[data-scrolled='true'] .navbar-burger-line {
+  background-color: var(--color-off-white);
+}
+
+/* ----- Réglages de la barre sur petit écran ----- */
+@media (max-width: 991.98px) {
+  .navbar-container {
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* ===== Mouvement réduit ===== */
+@media (prefers-reduced-motion: reduce) {
+  .navbar-menu,
+  .navbar-menu-label,
+  .navbar-menu-item,
+  .navbar-menu-footer,
+  .navbar-burger-line {
+    transition-duration: 0.01s;
+    transition-delay: 0s;
+  }
+
+  .navbar-menu-dot::after {
+    animation: none;
+  }
+}

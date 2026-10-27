@@ -1,5 +1,5 @@
 import '../../styles/heros.css'
-import portrait from '../../assets/portrait.jpg'
+import portrait from '../../assets/portrait.png'
 
 export function Heros() {
   return (
@@ -23,11 +23,11 @@ export function Heros() {
           </div>
         </div>
 
-        {/* Côté droit : colonne sky mint avec l'image */}
+        {/* Côté droit : le portrait incrusté dans le fond */}
         <div className="col-12 col-md-5 position-relative heros-visual">
           <img
             src={portrait}
-            alt="Portrait"
+            alt="Portrait de Mamadou Dian Bah"
             className="position-absolute bottom-0 start-0 w-100 h-100 heros-image"
           />
         </div>

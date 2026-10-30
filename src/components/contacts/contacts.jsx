@@ -1,61 +1,86 @@
 import { useEffect, useRef, useState } from 'react'
+import { useContent } from '../../hooks/contexts'
 import '../../styles/contact.css'
 
-const EMAIL = 'mamadoudianbah365@gmail.com'
-const WHATSAPP_NUMBER = '224626969454'
-const WHATSAPP_DISPLAY = '+224 626 96 94 54'
-const LINKEDIN_URL = 'https://www.linkedin.com/in/mamadou-dian-bah-109987206'
-const LINKEDIN_DISPLAY = 'linkedin.com/in/mamadou-dian-bah'
-const GITHUB_URL = 'https://github.com/Jabir224'
-const GITHUB_DISPLAY = 'github.com/Jabir224'
-
-const FORM_ENDPOINT = `https://formsubmit.co/ajax/${EMAIL}`
-
-const CHANNELS = [
-  {
-    id: 'mail',
-    icon: 'bi bi-envelope',
-    label: '// e-mail',
-    value: EMAIL,
-    href: `mailto:${EMAIL}`,
-    external: false,
-  },
-  {
-    id: 'whatsapp',
-    icon: 'bi bi-whatsapp',
-    label: '// whatsapp',
-    value: WHATSAPP_DISPLAY,
-    href: `https://wa.me/${WHATSAPP_NUMBER}`,
-    external: true,
-  },
-  {
-    id: 'linkedin',
-    icon: 'bi bi-linkedin',
-    label: '// linkedin',
-    value: LINKEDIN_DISPLAY,
-    href: LINKEDIN_URL,
-    external: true,
-  },
-  {
-    id: 'github',
-    icon: 'bi bi-github',
-    label: '// github',
-    value: GITHUB_DISPLAY,
-    href: GITHUB_URL,
-    external: true,
-  },
-]
-
-const SUBJECTS = ['Projet digital', 'Mission MOA', 'Développement', 'Autre']
+// Sujets envoyés dans l'e-mail : toujours en français, quelle que soit la langue du visiteur.
+// Même ordre que la liste "subjects" de la base.
+const EMAIL_SUBJECTS = ['Projet digital', 'Mission MOA', 'Développement', 'Autre']
 
 const EMPTY_FORM = { name: '', reach: '', message: '' }
 
-function Contact() {
+// Longueurs maximales des champs
+const MAX_NAME = 100
+const MAX_REACH = 150
+const MAX_MESSAGE = 2000
+
+// Protections anti-spam
+const MIN_TYPING_MS = 3000
+const COOLDOWN_MS = 30000
+const LAST_SENT_KEY = 'portfolio-contact-last-sent'
+
+function getLastSent() {
+  try {
+    return Number(localStorage.getItem(LAST_SENT_KEY)) || 0
+  } catch {
+    return 0
+  }
+}
+
+function saveLastSent() {
+  try {
+    localStorage.setItem(LAST_SENT_KEY, String(Date.now()))
+  } catch {
+    // Stockage indisponible : la pause entre deux envois ne sera pas mémorisée
+  }
+}
+
+export function Contact() {
+  const content = useContent('contact')
+  const profile = useContent('profile')
+  const subjects = content.subjects ?? []
+
+  // Les canaux de contact viennent de la base : icônes et ordre restent dans le code
+  const channels = [
+    {
+      id: 'mail',
+      icon: 'bi bi-envelope',
+      label: '// e-mail',
+      value: profile.email,
+      href: `mailto:${profile.email}`,
+      external: false,
+    },
+    {
+      id: 'whatsapp',
+      icon: 'bi bi-whatsapp',
+      label: '// whatsapp',
+      value: profile.whatsappDisplay,
+      href: `https://wa.me/${profile.whatsappNumber}`,
+      external: true,
+    },
+    {
+      id: 'linkedin',
+      icon: 'bi bi-linkedin',
+      label: '// linkedin',
+      value: profile.linkedinDisplay,
+      href: profile.linkedinUrl,
+      external: true,
+    },
+    {
+      id: 'github',
+      icon: 'bi bi-github',
+      label: '// github',
+      value: profile.githubDisplay,
+      href: profile.githubUrl,
+      external: true,
+    },
+  ]
+
   const [visible, setVisible] = useState(false)
   const [form, setForm] = useState(EMPTY_FORM)
   const [subjectIndex, setSubjectIndex] = useState(0)
   const [status, setStatus] = useState('idle')
   const sectionRef = useRef(null)
+  const typingStartedAt = useRef(null)
 
   useEffect(() => {
     const node = sectionRef.current
@@ -83,6 +108,10 @@ function Contact() {
 
   const handleChange = (event) => {
     const { name, value } = event.target
+
+    // Mémorise l'instant de la première saisie
+    if (typingStartedAt.current === null) typingStartedAt.current = Date.now()
+
     setForm((current) => ({ ...current, [name]: value }))
     if (status !== 'sending') setStatus('idle')
   }
@@ -94,30 +123,53 @@ function Contact() {
     const honey = new FormData(event.currentTarget).get('_honey')
     if (honey) return
 
+    // Sans adresse de destination, impossible d'envoyer
+    if (!profile.email) {
+      setStatus('error')
+      return
+    }
+
+    // Champs faits uniquement d'espaces
+    const name = form.name.trim()
+    const reach = form.reach.trim()
+    const message = form.message.trim()
+    if (!name || !reach || !message) return
+
+    // Trop rapide pour un humain, ou nouvel envoi trop proche du précédent
+    const typedFor = Date.now() - (typingStartedAt.current ?? Date.now())
+    const sinceLastSent = Date.now() - getLastSent()
+
+    if (typedFor < MIN_TYPING_MS || sinceLastSent < COOLDOWN_MS) {
+      setStatus('wait')
+      return
+    }
+
     setStatus('sending')
 
-    const subject = SUBJECTS[subjectIndex]
+    const subject = EMAIL_SUBJECTS[subjectIndex]
 
     try {
-      const response = await fetch(FORM_ENDPOINT, {
+      const response = await fetch(`https://formsubmit.co/ajax/${profile.email}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },
         body: JSON.stringify({
-          _subject: `[Portfolio] ${subject} - ${form.name}`,
+          _subject: `[Portfolio] ${subject} - ${name}`,
           _template: 'table',
           _captcha: 'false',
           Sujet: subject,
-          Nom: form.name,
-          Contact: form.reach,
-          Message: form.message,
+          Nom: name,
+          Contact: reach,
+          Message: message,
         }),
       })
 
       if (!response.ok) throw new Error('Envoi refusé')
 
+      saveLastSent()
+      typingStartedAt.current = null
       setForm(EMPTY_FORM)
       setStatus('sent')
     } catch (error) {
@@ -126,14 +178,16 @@ function Contact() {
   }
 
   const submitLabel = {
-    idle: 'Envoyer le message',
-    sending: 'Envoi en cours...',
-    sent: 'Message envoyé, merci !',
-    error: 'Réessayer',
+    idle: content.submitIdle,
+    wait: content.submitIdle,
+    sending: content.submitSending,
+    sent: content.submitSent,
+    error: content.submitError,
   }[status]
 
   const submitIcon = {
     idle: 'bi bi-arrow-right',
+    wait: 'bi bi-arrow-right',
     sending: 'bi bi-three-dots',
     sent: 'bi bi-check-lg',
     error: 'bi bi-arrow-repeat',
@@ -151,19 +205,19 @@ function Contact() {
           {/* ===== Colonne gauche : titre + liens ===== */}
           <div className="col-12 col-lg-5">
             <p className="contact-reveal contact-label" style={{ '--d': '0ms' }}>
-              {'// contact'}
+              {content.eyebrow}
             </p>
 
             <h2
               className="contact-reveal fw-bold contact-title"
               style={{ '--d': '80ms' }}
             >
-              Parlons de <span className="contact-title-accent">votre projet.</span>
+              {content.titleStart}{' '}
+              <span className="contact-title-accent">{content.titleAccent}</span>
             </h2>
 
             <p className="contact-reveal contact-text" style={{ '--d': '160ms' }}>
-              Un besoin, une idée, un projet à piloter ou à coder ? Écrivez-moi
-              par le canal qui vous arrange.
+              {content.text}
             </p>
 
             <p
@@ -171,11 +225,11 @@ function Contact() {
               style={{ '--d': '220ms' }}
             >
               <span className="contact-pulse"></span>
-              Basé à Conakry, Guinée
+              {content.place}
             </p>
 
             <ul className="list-unstyled d-flex flex-column gap-3 contact-links">
-              {CHANNELS.map((channel, index) => (
+              {channels.map((channel, index) => (
                 <li
                   key={channel.id}
                   className="contact-reveal"
@@ -212,14 +266,14 @@ function Contact() {
               style={{ '--d': '200ms' }}
               onSubmit={handleSubmit}
             >
-              <p className="contact-form-label">{'// envoyer un message'}</p>
+              <p className="contact-form-label">{content.formLabel}</p>
 
               {/* Sujet */}
-              <p className="contact-form-sub">{'// sujet'}</p>
+              <p className="contact-form-sub">{content.subjectLabel}</p>
               <div className="d-flex flex-wrap gap-2 contact-chips">
-                {SUBJECTS.map((subject, index) => (
+                {subjects.map((subject, index) => (
                   <button
-                    key={subject}
+                    key={index}
                     type="button"
                     className="contact-chip"
                     data-active={subjectIndex === index}
@@ -229,7 +283,7 @@ function Contact() {
                       if (status !== 'sending') setStatus('idle')
                     }}
                   >
-                    {subject}
+                    {subject.text}
                   </button>
                 ))}
               </div>
@@ -255,12 +309,13 @@ function Contact() {
                       name="name"
                       placeholder=" "
                       autoComplete="name"
+                      maxLength={MAX_NAME}
                       required
                       value={form.name}
                       onChange={handleChange}
                     />
                     <label className="contact-field-label" htmlFor="contact-name">
-                      Votre nom
+                      {content.fieldName}
                     </label>
                   </div>
                 </div>
@@ -273,12 +328,13 @@ function Contact() {
                       type="text"
                       name="reach"
                       placeholder=" "
+                      maxLength={MAX_REACH}
                       required
                       value={form.reach}
                       onChange={handleChange}
                     />
                     <label className="contact-field-label" htmlFor="contact-reach">
-                      E-mail ou téléphone
+                      {content.fieldReach}
                     </label>
                   </div>
                 </div>
@@ -291,12 +347,13 @@ function Contact() {
                       name="message"
                       rows="5"
                       placeholder=" "
+                      maxLength={MAX_MESSAGE}
                       required
                       value={form.message}
                       onChange={handleChange}
                     ></textarea>
                     <label className="contact-field-label" htmlFor="contact-message">
-                      Votre message
+                      {content.fieldMessage}
                     </label>
                   </div>
                 </div>
@@ -313,18 +370,18 @@ function Contact() {
               </button>
 
               <p className="contact-feedback" data-status={status} role="status">
-                {status === 'sent' && 'Bien reçu, je vous réponds dès que possible.'}
+                {status === 'sent' && content.feedbackSent}
+                {status === 'wait' && content.feedbackWait}
                 {status === 'error' && (
                   <>
-                    L’envoi a échoué. Écrivez-moi directement à{' '}
-                    <a className="contact-feedback-link" href={`mailto:${EMAIL}`}>
-                      {EMAIL}
+                    {content.feedbackError}{' '}
+                    <a className="contact-feedback-link" href={`mailto:${profile.email}`}>
+                      {profile.email}
                     </a>
                     .
                   </>
                 )}
-                {(status === 'idle' || status === 'sending') &&
-                  'Votre message m’arrive directement par e-mail.'}
+                {(status === 'idle' || status === 'sending') && content.feedbackIdle}
               </p>
             </form>
           </div>
@@ -332,10 +389,12 @@ function Contact() {
 
         {/* ===== Pied de page ===== */}
         <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 contact-footer">
-          <span>© 2026 Mamadou Dian Bah</span>
-          <span>Conakry, Guinée</span>
+          <span>
+            © {profile.year} {profile.name}
+          </span>
+          <span>{content.place}</span>
           <a className="d-inline-flex align-items-center gap-2 contact-top" href="#">
-            Retour en haut
+            {content.footerTop}
             <i className="bi bi-arrow-up"></i>
           </a>
         </div>
@@ -343,5 +402,3 @@ function Contact() {
     </section>
   )
 }
-
-export default Contact

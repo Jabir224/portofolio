@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useContent, useLanguage } from '../../hooks/contexts'
 import '../../styles/navbar.css'
 
 const navItems = [
@@ -7,37 +8,6 @@ const navItems = [
   { labelFR: 'Projets', labelEN: 'Projects', href: '#projects' },
   { labelFR: 'Parcours', labelEN: 'Journey', href: '#journey' },
   { labelFR: 'Contacts', labelEN: 'Contact', href: '#contact' },
-]
-
-const socials = [
-  {
-    id: 'mail',
-    icon: 'bi bi-envelope',
-    label: 'E-mail',
-    href: 'mailto:mamadoudianbah365@gmail.com',
-    external: false,
-  },
-  {
-    id: 'whatsapp',
-    icon: 'bi bi-whatsapp',
-    label: 'WhatsApp',
-    href: 'https://wa.me/224626969454',
-    external: true,
-  },
-  {
-    id: 'linkedin',
-    icon: 'bi bi-linkedin',
-    label: 'LinkedIn',
-    href: 'https://www.linkedin.com/in/mamadou-dian-bah-109987206',
-    external: true,
-  },
-  {
-    id: 'github',
-    icon: 'bi bi-github',
-    label: 'GitHub',
-    href: 'https://github.com/Jabir224',
-    external: true,
-  },
 ]
 
 /* Toggle FR / EN : même rendu qu'avant, utilisé sur desktop et sur mobile */
@@ -62,13 +32,41 @@ function LangSwitch({ language, onToggle }) {
 }
 
 export function NavBar() {
-  const [language, setLanguage] = useState('FR')
+  const { language, isEN, toggleLanguage } = useLanguage()
+  const profile = useContent('profile')
   const [menuOpen, setMenuOpen] = useState(false)
-  const isEN = language === 'EN'
 
-  const handleToggleLanguage = () => {
-    setLanguage((prev) => (prev === 'FR' ? 'EN' : 'FR'))
-  }
+  // Les réseaux viennent de la base : icônes et ordre restent dans le code
+  const socials = [
+    {
+      id: 'mail',
+      icon: 'bi bi-envelope',
+      label: 'E-mail',
+      href: `mailto:${profile.email}`,
+      external: false,
+    },
+    {
+      id: 'whatsapp',
+      icon: 'bi bi-whatsapp',
+      label: 'WhatsApp',
+      href: `https://wa.me/${profile.whatsappNumber}`,
+      external: true,
+    },
+    {
+      id: 'linkedin',
+      icon: 'bi bi-linkedin',
+      label: 'LinkedIn',
+      href: profile.linkedinUrl,
+      external: true,
+    },
+    {
+      id: 'github',
+      icon: 'bi bi-github',
+      label: 'GitHub',
+      href: profile.githubUrl,
+      external: true,
+    },
+  ]
 
   const toggleMenu = () => {
     setMenuOpen((prev) => !prev)
@@ -127,7 +125,7 @@ export function NavBar() {
 
         {/* Toggle de langue */}
         <div className="col-2 d-flex justify-content-end align-items-center">
-          <LangSwitch language={language} onToggle={handleToggleLanguage} />
+          <LangSwitch language={language} onToggle={toggleLanguage} />
         </div>
       </div>
 
@@ -136,7 +134,7 @@ export function NavBar() {
         <h2 className="navbar-title navbar-mobile-title">Portfolio</h2>
 
         <div className="d-flex align-items-center gap-3">
-          <LangSwitch language={language} onToggle={handleToggleLanguage} />
+          <LangSwitch language={language} onToggle={toggleLanguage} />
 
           <button
             type="button"

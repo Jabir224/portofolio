@@ -1,0 +1,238 @@
+/* ===== Écran plein page (chargement et erreur) ===== */
+.status-screen {
+  position: relative;
+  min-height: 100dvh;
+  padding: 2rem 1.5rem;
+  overflow: hidden;
+  background-color: var(--color-graphite);
+  color: var(--color-off-white);
+}
+
+/* Grille de points en fond, estompée vers les bords */
+.status-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--color-sky-mint) 22%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 24px 24px;
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 20%, transparent 70%);
+  mask-image: radial-gradient(ellipse at center, #000 20%, transparent 70%);
+}
+
+/* Le contenu passe au-dessus de la grille et apparaît en cascade */
+.status-screen > * {
+  position: relative;
+  animation: status-enter 0.6s ease both;
+}
+
+.status-screen > :nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+.status-screen > :nth-child(3) {
+  animation-delay: 0.16s;
+}
+
+.status-screen > :nth-child(4) {
+  animation-delay: 0.24s;
+}
+
+.status-screen > :nth-child(5) {
+  animation-delay: 0.32s;
+}
+
+/* ===== Marque ===== */
+.status-brand {
+  display: flex;
+  align-items: center;
+  color: var(--color-sky-mint);
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Point "en ligne" qui pulse */
+.status-brand-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 0.6rem;
+  border-radius: 50%;
+  background-color: currentColor;
+  animation: status-pulse 2s ease-out infinite;
+}
+
+/* ===== Chargement ===== */
+.status-bar {
+  width: min(240px, 60vw);
+  height: 2px;
+  margin: 1.75rem 0 1rem;
+  overflow: hidden;
+  border-radius: 2px;
+  background-color: color-mix(in srgb, var(--color-sky-mint) 20%, transparent);
+}
+
+.status-bar-fill {
+  display: block;
+  width: 40%;
+  height: 100%;
+  background-color: var(--color-sky-mint);
+  animation: status-slide 1.4s ease-in-out infinite;
+}
+
+.status-text {
+  color: var(--color-sky-mint);
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+}
+
+/* Curseur qui clignote après le texte */
+.status-text::after {
+  content: '_';
+  margin-left: 0.15em;
+  animation: status-blink 1s steps(1) infinite;
+}
+
+/* Message de connexion lente : réserve sa place pour ne rien décaler */
+.status-hint {
+  min-height: 1.5em;
+  color: var(--color-off-white);
+  font-size: 0.9rem;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.status-hint[data-visible='true'] {
+  opacity: 0.7;
+}
+
+/* ===== Erreur ===== */
+.error-title {
+  max-width: 20ch;
+  color: var(--color-off-white);
+  font-size: clamp(1.75rem, 4.5vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.error-title-accent {
+  color: var(--color-sky-mint);
+}
+
+.error-text {
+  max-width: 44ch;
+  color: var(--color-off-white);
+  line-height: 1.6;
+  opacity: 0.85;
+}
+
+/* Mini terminal qui montre la ligne d'erreur */
+.error-terminal {
+  max-width: 420px;
+  padding: 1rem 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--color-sky-mint) 25%, transparent);
+  border-radius: 1rem;
+  background-color: var(--color-graphite-light);
+  color: var(--color-off-white);
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+.error-terminal-prompt {
+  color: var(--color-sky-mint);
+}
+
+.error-terminal-code {
+  color: var(--color-sky-mint);
+  font-weight: 700;
+}
+
+/* Bouton réessayer, même style que les boutons du héros */
+.error-button {
+  padding: 0.75rem 1.75rem;
+  border: 2px solid var(--color-sky-mint);
+  border-radius: 999px;
+  background-color: var(--color-sky-mint);
+  color: var(--color-graphite);
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.error-button:hover {
+  background-color: transparent;
+  color: var(--color-sky-mint);
+}
+
+.error-button:focus-visible {
+  outline: 2px solid var(--color-off-white);
+  outline-offset: 3px;
+}
+
+.error-button .bi {
+  transition: transform 0.4s ease;
+}
+
+.error-button:hover .bi {
+  transform: rotate(180deg);
+}
+
+/* ===== Animations ===== */
+@keyframes status-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes status-slide {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}
+
+@keyframes status-pulse {
+  from {
+    box-shadow: 0 0 0 0 currentColor;
+  }
+  to {
+    box-shadow: 0 0 0 8px transparent;
+  }
+}
+
+@keyframes status-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ===== Accessibilité : moins d'animation si l'utilisateur le demande ===== */
+@media (prefers-reduced-motion: reduce) {
+  .status-screen > *,
+  .status-brand-dot,
+  .status-text::after {
+    animation: none;
+  }
+
+  .status-bar-fill {
+    width: 100%;
+    animation: none;
+  }
+}

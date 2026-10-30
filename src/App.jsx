@@ -1,14 +1,21 @@
 import { useScrollTheme } from './hooks/useScrollTheme'
-import { NavBar } from './components/NavBar/navbar'
-import { Heros } from './components/heros/heros'
+import { useContentStatus } from './hooks/contexts'
+import { NavBar } from './components/navbar/NavBar'
+import { Heros } from './components/heros/Heros'
 import { About } from './components/About/About'
 import { Expertise } from './components/Expertise/expertise'
-import { Journey } from './components/journey/journey'
-import Projects from './components/projects/projects'
-import Contact from './components/contacts/contacts'
+import { Projects } from './components/projects/projects'
+import { Journey } from './components/journey/Journey'
+import { Contact } from './components/contacts/contacts'
+import { LoadingScreen } from './components/status/loadingScreen'
+import { ErrorScreen } from './components/status/ErrorScreen'
 
 function App() {
   useScrollTheme()
+  const { status, isSlow, errorCode, retry } = useContentStatus()
+
+  if (status === 'loading') return <LoadingScreen isSlow={isSlow} />
+  if (status === 'error') return <ErrorScreen errorCode={errorCode} onRetry={retry} />
 
   return (
     <div className="main-container">

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useContent } from '../../hooks/contexts'
 import '../../styles/journey.css'
 
 const DESKTOP_QUERY = '(min-width: 992px)'
@@ -6,74 +7,22 @@ const DESKTOP_QUERY = '(min-width: 992px)'
 // Tracé du serpent dans un repère de 1000 x 380
 const PATH = 'M 40 90 H 860 A 100 100 0 0 1 860 290 H 120'
 
+// Position de chaque étape, dans le même ordre que la liste "steps" de la base
 // x et y : position du cercle en % du tracé
 // t : avancement sur la ligne (0 à 1), pour que le cercle apparaisse quand la ligne l'atteint
 // side : sens d'ouverture de la carte sur desktop
-const steps = [
-  {
-    period: '2019 – 2023',
-    title: 'Génie informatique',
-    place: 'Université Mahatma Gandhi',
-    points: ['Diplôme en génie informatique', 'Bases du développement logiciel'],
-    x: '18%',
-    y: '23.7%',
-    t: 0.075,
-    side: 'down',
-  },
-  {
-    period: 'Mars – Juil. 2023',
-    title: 'Développeur Laravel',
-    place: 'Mada hardsoft',
-    points: [
-      'Site web robuste sous Laravel, avec des améliorations significatives pour l’administration',
-      'Partie client en HTML, CSS et Bootstrap, modèle MVC et Eloquent',
-    ],
-    x: '44%',
-    y: '23.7%',
-    t: 0.213,
-    side: 'down',
-  },
-  {
-    period: '2023',
-    title: 'Développement mobile Flutter',
-    place: 'DYMA.FR',
-    points: ['Formation au développement mobile avec Flutter'],
-    x: '70%',
-    y: '23.7%',
-    t: 0.352,
-    side: 'down',
-  },
-  {
-    period: 'Juil. 2023 – Mars 2025',
-    title: 'Développeur mobile Flutter',
-    place: 'Wise and Winner',
-    points: [
-      'Prototypage et design Figma de plusieurs applications',
-      'Modélisation de bases de données et conception d’API en PHP',
-      'Applications Flutter de la conception à la mise en production',
-    ],
-    x: '60%',
-    y: '76.3%',
-    t: 0.744,
-    side: 'up',
-  },
-  {
-    period: 'Avril 2025 – en cours',
-    title: 'MOA',
-    place: 'Banque Nationale de Guinée',
-    points: [
-      'Pilotage de Bank to Wallet, E-banking et Wallet BNG',
-      'Stratégie de pénétration du marché du projet Wallet',
-      'Coordination des équipes techniques et métiers',
-    ],
-    x: '36%',
-    y: '76.3%',
-    t: 0.872,
-    side: 'up',
-  },
+const positions = [
+  { x: '18%', y: '23.7%', t: 0.075, side: 'down' },
+  { x: '44%', y: '23.7%', t: 0.213, side: 'down' },
+  { x: '70%', y: '23.7%', t: 0.352, side: 'down' },
+  { x: '60%', y: '76.3%', t: 0.744, side: 'up' },
+  { x: '36%', y: '76.3%', t: 0.872, side: 'up' },
 ]
 
 export function Journey() {
+  const content = useContent('journey')
+  const steps = content.steps ?? []
+
   const trackRef = useRef(null)
   const listRef = useRef(null)
   const [activeIndex, setActiveIndex] = useState(null)
@@ -130,7 +79,7 @@ export function Journey() {
     items.forEach((item) => observer.observe(item))
 
     return () => observer.disconnect()
-  }, [])
+  }, [steps.length])
 
   // Mobile : la ligne se remplit au fil du scroll
   useEffect(() => {
@@ -179,16 +128,15 @@ export function Journey() {
 
   return (
     <section id="journey" className="m-3 py-3 pe-3 ps-4 p-lg-5 journey">
-      <p className="mb-3 journey-eyebrow">// parcours</p>
+      <p className="mb-3 journey-eyebrow">{content.eyebrow}</p>
 
       <h2 className="fw-bold mb-3 journey-title">
-        Du code au <span className="journey-title-accent">pilotage</span>, un chemin cohérent.
+        {content.titleStart} <span className="journey-title-accent">{content.titleAccent}</span>
+        {content.titleEnd}
       </h2>
 
-      <p className="d-none d-lg-block mb-4 journey-hint">
-        Survolez un point pour voir le détail de l’étape.
-      </p>
-      <p className="d-lg-none mb-4 journey-hint">Touchez une étape pour voir le détail.</p>
+      <p className="d-none d-lg-block mb-4 journey-hint">{content.hintDesktop}</p>
+      <p className="d-lg-none mb-4 journey-hint">{content.hintMobile}</p>
 
       <div ref={trackRef} className="mt-4 mt-lg-0 journey-track" data-visible={isVisible}>
         {/* Tracé du serpent (desktop uniquement) */}
@@ -200,51 +148,55 @@ export function Journey() {
           <circle className="journey-cap-end" cx="120" cy="290" r="10" />
         </svg>
 
-        <p className="d-none d-lg-block journey-end-label">// à suivre</p>
+        <p className="d-none d-lg-block journey-end-label">{content.endLabel}</p>
 
         <ol ref={listRef} className="list-unstyled mb-0 journey-list">
-          {steps.map((step, index) => (
-            <li
-              key={step.title}
-              className="journey-item"
-              data-side={step.side}
-              data-active={activeIndex === index}
-              style={{ '--x': step.x, '--y': step.y, '--t': step.t }}
-              onMouseEnter={() => handleEnter(index)}
-              onMouseLeave={handleLeave}
-              onClick={() => handleClick(index)}
-            >
-              <button
-                type="button"
-                className="journey-node"
-                aria-expanded={activeIndex === index}
-                aria-label={`${step.title}, ${step.period}`}
-                onFocus={() => handleEnter(index)}
-                onBlur={handleLeave}
+          {steps.map((step, index) => {
+            const position = positions[index] ?? positions[positions.length - 1]
+
+            return (
+              <li
+                key={index}
+                className="journey-item"
+                data-side={position.side}
+                data-active={activeIndex === index}
+                style={{ '--x': position.x, '--y': position.y, '--t': position.t }}
+                onMouseEnter={() => handleEnter(index)}
+                onMouseLeave={handleLeave}
+                onClick={() => handleClick(index)}
               >
-                <span className="journey-node-dot">{String(index + 1).padStart(2, '0')}</span>
-              </button>
+                <button
+                  type="button"
+                  className="journey-node"
+                  aria-expanded={activeIndex === index}
+                  aria-label={`${step.title}, ${step.period}`}
+                  onFocus={() => handleEnter(index)}
+                  onBlur={handleLeave}
+                >
+                  <span className="journey-node-dot">{String(index + 1).padStart(2, '0')}</span>
+                </button>
 
-              <p className="journey-period">{step.period}</p>
+                <p className="journey-period">{step.period}</p>
 
-              <div className="journey-card">
-                <h3 className="fw-bold mb-1 journey-card-title">{step.title}</h3>
-                <p className="mb-0 journey-card-place">{step.place}</p>
+                <div className="journey-card">
+                  <h3 className="fw-bold mb-1 journey-card-title">{step.title}</h3>
+                  <p className="mb-0 journey-card-place">{step.place}</p>
 
-                <div className="journey-card-details">
-                  <div className="journey-card-details-inner">
-                    <ul className="list-unstyled mb-0 journey-card-points">
-                      {step.points.map((point) => (
-                        <li key={point}>{point}</li>
-                      ))}
-                    </ul>
+                  <div className="journey-card-details">
+                    <div className="journey-card-details-inner">
+                      <ul className="list-unstyled mb-0 journey-card-points">
+                        {(step.points ?? []).map((point, pointIndex) => (
+                          <li key={pointIndex}>{point.text}</li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
-                </div>
 
-                <i className="bi bi-plus-lg journey-card-icon" aria-hidden="true"></i>
-              </div>
-            </li>
-          ))}
+                  <i className="bi bi-plus-lg journey-card-icon" aria-hidden="true"></i>
+                </div>
+              </li>
+            )
+          })}
         </ol>
       </div>
     </section>

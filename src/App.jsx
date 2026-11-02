@@ -1,14 +1,14 @@
 import { useScrollTheme } from './hooks/useScrollTheme'
 import { useContentStatus } from './hooks/contexts'
-import { NavBar } from './components/navbar/NavBar'
-import { Heros } from './components/heros/Heros'
+import { NavBar } from './components/NavBar/navbar'
+import { Heros } from './components/heros/heros'
 import { About } from './components/About/About'
 import { Expertise } from './components/Expertise/expertise'
 import { Projects } from './components/projects/projects'
-import { Journey } from './components/journey/Journey'
+import { Journey } from './components/journey/journey'
 import { Contact } from './components/contacts/contacts'
 import { LoadingScreen } from './components/status/loadingScreen'
-import { ErrorScreen } from './components/status/ErrorScreen'
+import { ErrorScreen } from './components/status/errorScreen'
 
 function App() {
   useScrollTheme()
